@@ -56,7 +56,14 @@
               </ul>
             </li>
 
-            <li ><a href="#" >Import </a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Import <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><input type="file" name="filename" id="filename">
+                <div id="csvimporthint"></div></li>
+              </ul>
+            </li>
+
 
             <li ><a id="openConfig" href="#" >Config </a></li>
 
@@ -128,7 +135,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-primary" ng-click="saveChanges()">Save changes</button>
           </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
@@ -147,7 +154,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
     <script src="ngStorage.min.js"></script>
     <script src="http://gregpike.net/demos/angular-local-storage/src/angular-local-storage.js"></script>
-
+    <script src="sweetalert-master/lib/sweet-alert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="sweetalert-master/lib/sweet-alert.css">
     <script>
 
       function LightenDarkenColor(col, amt) {
@@ -234,6 +242,11 @@
           }
           }
         };
+        $scope.saveChanges = function(){
+          $localStorage.SavedColor = cook;
+          swal("Good job!", "All Saved!..", "success")
+        }
+
         window.onbeforeunload = function (event) {
         var message = 'Sure you want to leave?';
         if (typeof event == 'undefined') {
@@ -242,7 +255,6 @@
         if (event) {
           event.returnValue = message;
           $localStorage.Saved = $scope.todos;
-          $localStorage.SavedColor = cook;
         }
         return message;
       }
