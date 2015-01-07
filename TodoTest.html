@@ -1,0 +1,254 @@
+<html lang="en" ng-app="ToDo">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Alan Buscaglia">
+    <link rel="icon" href="favicon.ico">
+    <title>Todo App Alpha</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/custom.css" rel="stylesheet">
+
+</head>
+
+  <body id="change">
+<div ng-controller="todoController" ng-init="init()">
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">ToDoApp Alpha</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Data <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#" ng-click="saveInput()">Save</a></li>
+                <li class="divider"></li>
+                <li><a href="#" ng-click="loadInput()">Load</a></li>
+              </ul>
+            </li>
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Done <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#" ng-click="clearCompleted()">Clear</a></li>
+                <li class="divider"></li>
+                <li><a href="#" ng-click="showCompleted()">Show</a></li>
+              </ul>
+            </li>
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Export <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#" ng-click="exportPartialData()">Partial</a></li>
+                <li class="divider"></li>
+                <li><a href="#" ng-click="exportFullData()">Full</a></li>
+              </ul>
+            </li>
+
+            <li ><a href="#" >Import </a></li>
+
+            <li ><a id="openConfig" href="#" >Config </a></li>
+
+          </ul>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container" >
+
+      <div role="tabpanel">
+
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#default" aria-controls="default" role="tab" data-toggle="tab">Default</a></li>
+        <li role="presentation" data-toggle="tooltip" data-placement="bottom" title="New Proyect"><a href="#" >+</a></li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div id="proyects" class="tab-content">
+
+
+        <div role="tabpanel" class="tab-pane active" id="default">
+
+          <form class="form-inline" name="frm" ng-submit="addTodo()">
+
+            <div class="form-group">
+
+               <div class="col-xs-2">
+                <input type="text" id="newTodo" class="form-control" name="newTodo" ng-model="newTodo" required placeholder="Enter Task">
+               </div>
+            </div>
+            <button class="btn btn-default" ng-disabled="frm.$invalid">Go</button>
+          </form>
+
+            <ul id="tasks" >
+
+              <li ng-repeat="todo in todos">
+                <input type="checkbox" ng-model="todo.done"/>
+                <span ng-class="{'done':todo.done}">{{todo.title}}</span>
+              </li>
+            </ul>
+
+
+        </div>
+
+
+
+
+
+
+      </div>
+
+    </div>
+
+
+    </div> <!-- /container -->
+    <div id="configurationPanel" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Personalize</h4>
+          </div>
+          <div class="modal-body">
+            <h3>Select your favourite color&hellip;</h3>
+            <input class="color" value="" onblur="pick()" id="colorpick">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/custom.js"></script>
+    <script type="text/javascript" src="jscolor/jscolor.js"></script>
+    <script src="http://alasql.org/console/alasql.min.js"></script>
+    <script src="http://alasql.org/console/xlsx.core.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+    <script src="ngStorage.min.js"></script>
+    <script src="http://gregpike.net/demos/angular-local-storage/src/angular-local-storage.js"></script>
+
+    <script>
+
+      function LightenDarkenColor(col, amt) {
+          var usePound = false;
+          if (col[0] == "#") {
+              col = col.slice(1);
+              usePound = true;
+          }
+          var num = parseInt(col,16);
+          var r = (num >> 16) + amt;
+          if (r > 255) r = 255;
+          else if  (r < 0) r = 0;
+          var b = ((num >> 8) & 0x00FF) + amt;
+          if (b > 255) b = 255;
+          else if  (b < 0) b = 0;
+          var g = (num & 0x0000FF) + amt;
+          if (g > 255) g = 255;
+          else if (g < 0) g = 0;
+          return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+      }
+      var cook = null;
+      function pick(){
+        var elem = document.getElementById("colorpick").value;
+        cook = document.cookie="#" + elem;
+        var colour = document.getElementById("change");
+        colour.style.background = cook;
+        var buttonBackgroundColor = LightenDarkenColor(cook, -50);
+        var buttonelement = document.getElementsByTagName('button');
+        for(var i=0;i<buttonelement.length;i++){
+        buttonelement[i].style.background= buttonBackgroundColor;
+      }
+
+      }
+      var ToDo =angular.module('ToDo',['ngStorage']);
+      ToDo.controller('todoController', function($scope, $localStorage){
+        $scope.todos = [];
+        $scope.Saved = [];
+        $scope.exportPartialData = function () {
+             alasql('SELECT * INTO XLSX("PartialReport.xlsx",{headers:true}) FROM ?',[$scope.todos]);
+          };
+        $scope.exportFullData = function () {
+           $scope.full=$scope.todos
+           $scope.full.concat($scope.Saved);
+           alasql('SELECT * INTO XLSX("FullReport.xlsx",{headers:true}) FROM ?',[$scope.full]);
+         };
+        $scope.addTodo = function(){
+          $scope.todos.push({'title' : $scope.newTodo, 'done' :false});
+          $scope.newtodo = ''
+        }
+        $scope.clearCompleted = function(){
+          $scope.todos = $scope.todos.filter(function(item){
+            if(item.done){
+              $scope.Saved.push(item);
+            }
+            return !item.done
+          })
+        }
+
+        $scope.showCompleted = function(){
+          alert($scope.Saved.length)
+        }
+        $scope.saveInput = function() {
+          $localStorage.Saved = $scope.todos;
+        }
+        $scope.loadInput = function() {
+          $scope.todos = $localStorage.Saved;
+        }
+        $scope.init = function(){
+          if($localStorage.Saved != undefined)
+            $scope.todos = $localStorage.Saved;
+          else
+            $scope.todos = [
+             {'title':'Build a ToDo app', 'done' :false}
+            ];
+
+          if($localStorage.SavedColor != undefined){
+          cook = $localStorage.SavedColor;
+          var colour = document.getElementById("change");
+          colour.style.background = cook;
+          var buttonBackgroundColor = LightenDarkenColor(cook, -50);
+          var buttonelement = document.getElementsByTagName('button');
+          for(var i=0;i<buttonelement.length;i++){
+          buttonelement[i].style.background= buttonBackgroundColor;
+          }
+          }
+        };
+        window.onbeforeunload = function (event) {
+        var message = 'Sure you want to leave?';
+        if (typeof event == 'undefined') {
+          event = window.event;
+        }
+        if (event) {
+          event.returnValue = message;
+          $localStorage.Saved = $scope.todos;
+          $localStorage.SavedColor = cook;
+        }
+        return message;
+      }
+
+      });
+    </script>
+
+
+</body></html>

@@ -1,0 +1,15 @@
+#proyects{
+  padding-top: 20px;
+}
+body {
+  padding-top: 70px;
+}
+.done {
+  text-decoration: line-through;
+  color: #ccc; }
+#tasks{
+  padding-top: 20px;
+}
+#tasks li{
+  list-style-type: none;
+}
