@@ -6,8 +6,9 @@
     <meta name="description" content="">
     <meta name="author" content="Alan Buscaglia">
     <link rel="icon" href="favicon.ico">
-    <title>Todo App Alpha</title>
+    <title>Todo App Beta</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
     <link href="css/custom.css" rel="stylesheet">
 
 </head>
@@ -24,7 +25,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">ToDoApp Alpha</a>
+          <p class="navbar-brand">ToDoApp Beta</p>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -39,21 +40,13 @@
             </li>
 
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Done <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="#" ng-click="clearCompleted()">Clear</a></li>
-                <li class="divider"></li>
-                <li><a href="#" ng-click="showCompleted()">Show</a></li>
-              </ul>
+              <a href="#" ng-click="clearCompleted()" role="button" >Clear </a>
+
             </li>
 
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Export <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="#" ng-click="exportPartialData()">Partial</a></li>
-                <li class="divider"></li>
-                <li><a href="#" ng-click="exportFullData()">Full</a></li>
-              </ul>
+              <a href="#" ng-click="exportData()">Export</a>
+
             </li>
 
             <li class="dropdown">
@@ -74,14 +67,16 @@
       </div>
     </nav>
 
-    <div class="container" >
+    <div class="container"  >
 
       <div role="tabpanel">
 
       <!-- Nav tabs -->
-      <ul class="nav nav-tabs" role="tablist" >
+      <ul class="nav nav-tabs" role="tablist"  >
+
         <li role='presentation' ng-class="{'active' : tab.active}" ng-repeat="tab in tabs"><a href="#" aria-controls="default" role="tab" data-toggle="tab" ng-click="selectTab(tab)">{{tab.title}}</a></li>
-        <li ng-click="addTab()" role="presentation" data-toggle="tooltip" data-placement="bottom" title="New Proyect"><a href="#">+</a></li>
+        <li ng-click="addTab()" role="presentation" data-toggle="tooltip" data-placement="bottom" title="New Proyect" ><a id="openProyectConfig" href="#">+</a></li>
+        <li ng-click="removeTab()" role="presentation" data-toggle="tooltip" data-placement="bottom" title="Delete Current Proyect" ><a  href="#">-</a></li>
       </ul>
 
       <!-- Tab panes -->
@@ -141,6 +136,26 @@
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+
+    <div id="proyectPanel" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Proyect</h4>
+          </div>
+          <div class="modal-body">
+            <h3>Choose Name&hellip;</h3>
+            <input size="35" type="text"  id="newTabName" ng-model="newTabName" name="" required placeholder="Enter Proyect new Name">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" ng-click="saveProyectChanges()">Save changes</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
 </div>
 
     <!-- Bootstrap core JavaScript
@@ -198,7 +213,9 @@
         $scope.Saved = [];
         $scope.tabs = [];
 
-
+        $scope.hide = function(){
+            $scope.show = false;
+        }
 
         var Files = $resource('/files/:id', { id: "@id" });
             angular.extend($scope, {
@@ -211,14 +228,16 @@
                     });
                 }
             });
-        $scope.exportPartialData = function () {
-             alasql('SELECT * INTO XLSX("PartialReport.xlsx",{headers:true}) FROM ?',[$scope.todos]);
+        $scope.exportData = function () {
+            if($scope.todos.length!=0){
+              alasql('SELECT * INTO XLSX("Report.xlsx",{headers:true}) FROM ?',[$scope.todos]);
+              swal("Done!", "All Exported!..", "success")
+            }
+            else
+               swal("Error!", "Nothing to Export!..", "error")
+
           };
-        $scope.exportFullData = function () {
-           $scope.full=$scope.todos
-           $scope.full.concat($scope.Saved);
-           alasql('SELECT * INTO XLSX("FullReport.xlsx",{headers:true}) FROM ?',[$scope.full]);
-         };
+
          $scope.import = function () {
              var file = $scope.uploadedfile;
              var result = alasql('SELECT * FROM XLSX(file,{headers:true})');
@@ -230,6 +249,7 @@
           $scope.newtodo = ''
         }
         $scope.clearCompleted = function(){
+          $scope.Saved=[];
           $scope.todos = $scope.todos.filter(function(item){
             if(item.done){
               $scope.Saved.push(item);
@@ -237,6 +257,10 @@
             return !item.done
           })
           $scope.currentTab.todos = $scope.todos;
+          if($scope.Saved.length!=0)
+            swal("Done!", "All Clear!..", "success")
+          else
+            swal("Error!", "Nothing to Clear!..", "error")
         }
 
         $scope.showCompleted = function(){
@@ -245,11 +269,13 @@
         $scope.saveInput = function() {
           $localStorage.Saved = $scope.tabs;
           $localStorage.TabSaved = $scope.currentTab;
+          swal("Done!", "All Saved!..", "success")
 
         }
         $scope.loadInput = function() {
           $scope.tabs = $localStorage.Saved;
           $scope.currentTab = $localStorage.TabSaved;
+          swal("Done!", "All Loaded!..", "success")
         }
         $scope.init = function(){
           if($localStorage.Saved != undefined){
@@ -275,10 +301,22 @@
         };
         $scope.addTab = function(){
           $scope.todos = [];
+          $scope.show = true;
           var tab = {'title' : 'default', 'todos': $scope.todos, 'active': true};
           $scope.tabs.push(tab);
           $scope.currentTab.active = false;
           $scope.currentTab = tab;
+        }
+        $scope.removeTab = function(){
+          if($scope.tabs.length != 0)
+            swal("Done!", "Deleted!..", "success")
+          else
+            swal("Error", "Nothing to Delete!..", "error")
+          $scope.tabs = $scope.tabs.filter(function(item){
+            return item != $scope.currentTab
+          });
+          $scope.todos=[];
+
         }
 
         $scope.selectTab = function(sTab)
@@ -292,6 +330,10 @@
         $scope.saveChanges = function(){
           $localStorage.SavedColor = cook;
           swal("Good job!", "All Saved!..", "success")
+        }
+        $scope.saveProyectChanges = function(){
+          $scope.currentTab.title = $scope.newTabName;
+          swal("Name Changed!", "All Saved!..", "success")
         }
 
         window.onbeforeunload = function (event) {

@@ -19,5 +19,9 @@ $(function () {
       e.preventDefault();
       $('#configurationPanel').modal();
   });
+  $('#openProyectConfig').click(function(e){
+      e.preventDefault();
+      $('#proyectPanel').modal();
+  });
 
 })
