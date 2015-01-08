@@ -1,0 +1,46 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-10 sidebar">
+            <ul class="nav nav-sidebar">
+                <li class="active"><a href="#">Current Search</a></li>
+                <li><a href="#">Keyword(s)</a></li>
+             </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-10">
+            <div class="page-header">
+                TAGS
+            </div>
+            <div ng-repeat="tag in tags">
+                <small>
+                    <input type="checkbox"> {{ tag }}
+                </small>
+            </div>
+        </div><!-- end col-md-6-->
+    </div>
+    <div class="row">
+        <div class="col-md-10">
+            <div class="page-header">
+                CONTRIBUTOR
+            </div>
+            <div ng-repeat="contributor in contributors">
+                <small>
+                    <input type="checkbox"> {{contributor}}
+                </small>
+            </div>
+        </div><!-- end col-md-6-->
+    </div>
+    <div class="row">
+        <div class="col-md-10">
+            <div class="page-header">
+                SHAPE
+            </div>
+            <div ng-repeat="shape in shapes">
+                <small>
+                    <input type="checkbox"> {{shape}}
+                </small>
+            </div>
+        </div><!-- end col-md-6-->
+    </div>
+</div>

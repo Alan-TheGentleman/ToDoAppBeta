@@ -1,0 +1,52 @@
+<html ng-app="app">
+<head>
+    <meta name="description" content="MS Image">
+    <meta name="author" content="Cele & Rochi">
+    <title>MS Images</title>
+
+    <script type="text/javascript" src="lib/angular/angular.min.js"></script>
+    <script type="text/javascript" src="lib/angular/angular-route.min.js"></script>
+    <script type="text/javascript" src="lib/angular/ng-tags-input.min.js"></script>
+    <script type="text/javascript" src="scripts/config.js"></script>
+    <script type="text/javascript" src="scripts/underscore.js"></script>
+    <script type="text/javascript" src="scripts/underscore-min.js"></script>
+    <!-- Controllers -->
+    <script type="text/javascript" src="scripts/controllers/mainCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/aboutCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/contactCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/add-imageCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/searchCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/edit-imageCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/detailed-imageCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/imageCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/add-contributorCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/contributorCtrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/edit-contributorCtrl.js"></script>
+
+    <!-- Directives -->
+    <script type="text/javascript" src="scripts/directives/fileInput.js"></script>
+    <script type="text/javascript" src="scripts/directives/ngFileSelect.js"></script>
+    <!-- Factory -->
+    <script type="text/javascript" src="scripts/factories/imageData.js"></script>
+    <script type="text/javascript" src="scripts/factories/upload.js"></script>
+
+    <!-- Services -->
+    <script type="text/javascript" src="scripts/services/imageService.js"></script>
+
+
+    <link rel="stylesheet" href="styles/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/myCss.css">
+    <link rel="stylesheet" href="styles/ng-tags-input.min.css">
+
+</head>
+<body ng-controller='mainCtrl'>
+<!-- Navigation bar -->
+
+<header ng-include="'partials/nav.html'"></header>
+<!-- Navigation bar -->
+<div ng-view></div>
+<!--<footer ng-include="'partials/footer.html'"></footer>
+</div>  /container -->
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2" ng-include="'partials/sidebar.html'" ng-show='sidebar'></div>
+        <div class="col-md-10">
+            <div class="title-image main-body">
+                <h3 class="ng-binding">{{titleView}}</h3>
+            </div>
+
+            <table class="table table-hover main-body">
+                <thead class="main-body">
+                <th class="col-md-4 text-left">Preview</th>
+                <th class="col-md-2">Name</th>
+                <th class="col-md-2">Description</th>
+                <th class="col-md-2">Tags</th>
+                <th class="col-sm-2"> </th>
+                </thead>
+                <tbody class="main-body">
+                <tr class="row" ng-repeat="image in images">
+                    <td class="col-md-4"> <a href="#/edit-image/{{image.id}}" class="search-preview thumbnail"><img ng-src={{image.logotype}}></a></td>
+                    <td class="col-md-2">{{image.name}}</td>
+                    <td class="col-md-2">{{image.description}}</td>
+                    <td class="col-md-2">{{getFormattedTags(image.tags)}}</td>
+                    <td class="col-md-2"><a href="#/edit-image/{{image.id}}">Edit</a></td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div> <!-- /container -->

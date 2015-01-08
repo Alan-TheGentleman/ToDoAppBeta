@@ -1,0 +1,20 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2" ng-include="'partials/sidebar.html'" ng-show='sidebar'></div>
+        <div class="col-md-10">
+            <div class="title-image main-body">
+                <h3 class="ng-binding">{{titleView}}</h3>
+            </div>
+            <div class="col-md-3" ng-repeat="image in images">
+                <div class="images-container">
+                    <div> <a href="#/detailed-image/{{image._id}}" class="search-preview thumbnail"><img ng-src={{image.path}}></a> </div>
+                    <div class="col-md-2"> <a href="#/edit-image/{{image._id}}"><span class="glyphicon glyphicon-edit"></span></a> </div>
+                    <div class="col-md-2"><a href="api/images/download/{{image._id}}"><span class="glyphicon glyphicon-download"></span></a></div>
+                    <div class="col-md-2" ng-click="delete(image._id)"><span class="glyphicon glyphicon-trash"></span></div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div> <!-- /container -->

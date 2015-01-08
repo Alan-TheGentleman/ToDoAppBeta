@@ -1,0 +1,17 @@
+{
+    "name": "MSImages",
+    "version": "0.0.1",
+    "description": "A tool to Upload and Download Images from Making Sense contributors",
+    "main": "./public/styles/myCss.css",
+    "moduleType": [
+        "node"
+    ],
+    "dependencies": {
+        "angular": "1.2.0-rc.1",
+        "bootstrap": "~3.0.0",
+        "underscore": "~1.5.2"
+    },
+    "devDependencies": {
+
+    }
+}

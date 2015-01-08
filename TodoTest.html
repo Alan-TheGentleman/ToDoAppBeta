@@ -59,8 +59,9 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Import <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
-                <li><input type="file" name="filename" id="filename">
-                <div id="csvimporthint"></div></li>
+                <li><input type="file" ng-model="model.file" change="upload(model)">
+                <li class="divider"></li>
+                <li><a href="#" ng-click="import()">Upload</a></li>
               </ul>
             </li>
 
@@ -78,9 +79,9 @@
       <div role="tabpanel">
 
       <!-- Nav tabs -->
-      <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#default" aria-controls="default" role="tab" data-toggle="tab">Default</a></li>
-        <li role="presentation" data-toggle="tooltip" data-placement="bottom" title="New Proyect"><a href="#" >+</a></li>
+      <ul class="nav nav-tabs" role="tablist" >
+        <li role='presentation' ng-class="{'active' : tab.active}" ng-repeat="tab in tabs"><a href="#" aria-controls="default" role="tab" data-toggle="tab" ng-click="selectTab(tab)">{{tab.title}}</a></li>
+        <li ng-click="addTab()" role="presentation" data-toggle="tooltip" data-placement="bottom" title="New Proyect"><a href="#">+</a></li>
       </ul>
 
       <!-- Tab panes -->
@@ -156,6 +157,8 @@
     <script src="http://gregpike.net/demos/angular-local-storage/src/angular-local-storage.js"></script>
     <script src="sweetalert-master/lib/sweet-alert.min.js"></script>
     <link rel="stylesheet" type="text/css" href="sweetalert-master/lib/sweet-alert.css">
+    <script src="angular-file.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular-resource.min.js"></script>
     <script>
 
       function LightenDarkenColor(col, amt) {
@@ -189,10 +192,25 @@
       }
 
       }
-      var ToDo =angular.module('ToDo',['ngStorage']);
-      ToDo.controller('todoController', function($scope, $localStorage){
+      var ToDo =angular.module('ToDo',['ngStorage', 'ur.file', 'ngResource']);
+      ToDo.controller('todoController', function($scope, $localStorage, $resource){
         $scope.todos = [];
         $scope.Saved = [];
+        $scope.tabs = [];
+
+
+
+        var Files = $resource('/files/:id', { id: "@id" });
+            angular.extend($scope, {
+
+                model: { file: null },
+
+                upload: function(model) {
+                    Files.prototype.$save.call(model.file, function(self, headers) {
+                        // Handle server response
+                    });
+                }
+            });
         $scope.exportPartialData = function () {
              alasql('SELECT * INTO XLSX("PartialReport.xlsx",{headers:true}) FROM ?',[$scope.todos]);
           };
@@ -201,6 +219,12 @@
            $scope.full.concat($scope.Saved);
            alasql('SELECT * INTO XLSX("FullReport.xlsx",{headers:true}) FROM ?',[$scope.full]);
          };
+         $scope.import = function () {
+             var file = $scope.uploadedfile;
+             var result = alasql('SELECT * FROM XLSX(file,{headers:true})');
+             var a = 0;
+
+          };
         $scope.addTodo = function(){
           $scope.todos.push({'title' : $scope.newTodo, 'done' :false});
           $scope.newtodo = ''
@@ -212,36 +236,59 @@
             }
             return !item.done
           })
+          $scope.currentTab.todos = $scope.todos;
         }
 
         $scope.showCompleted = function(){
           alert($scope.Saved.length)
         }
         $scope.saveInput = function() {
-          $localStorage.Saved = $scope.todos;
+          $localStorage.Saved = $scope.tabs;
+          $localStorage.TabSaved = $scope.currentTab;
+
         }
         $scope.loadInput = function() {
-          $scope.todos = $localStorage.Saved;
+          $scope.tabs = $localStorage.Saved;
+          $scope.currentTab = $localStorage.TabSaved;
         }
         $scope.init = function(){
-          if($localStorage.Saved != undefined)
-            $scope.todos = $localStorage.Saved;
-          else
-            $scope.todos = [
-             {'title':'Build a ToDo app', 'done' :false}
-            ];
-
+          if($localStorage.Saved != undefined){
+            $scope.loadInput();
+          }
+          else{
+            $scope.tabs.push({'title' : 'default', 'todos': $scope.todos,
+            'active': true});
+            $scope.currentTab = $scope.tabs[0];
+          }
           if($localStorage.SavedColor != undefined){
-          cook = $localStorage.SavedColor;
-          var colour = document.getElementById("change");
-          colour.style.background = cook;
-          var buttonBackgroundColor = LightenDarkenColor(cook, -50);
-          var buttonelement = document.getElementsByTagName('button');
-          for(var i=0;i<buttonelement.length;i++){
-          buttonelement[i].style.background= buttonBackgroundColor;
+            cook = $localStorage.SavedColor;
+            var colour = document.getElementById("change");
+            colour.style.background = cook;
+            var buttonBackgroundColor = LightenDarkenColor(cook, -50);
+            var buttonelement = document.getElementsByTagName('button');
+            for(var i=0;i<buttonelement.length;i++){
+              buttonelement[i].style.background= buttonBackgroundColor;
+            }
+
           }
-          }
+
         };
+        $scope.addTab = function(){
+          $scope.todos = [];
+          var tab = {'title' : 'default', 'todos': $scope.todos, 'active': true};
+          $scope.tabs.push(tab);
+          $scope.currentTab.active = false;
+          $scope.currentTab = tab;
+        }
+
+        $scope.selectTab = function(sTab)
+        {
+          sTab.active = true;
+          $scope.currentTab.active = false;
+          $scope.currentTab = sTab;
+          $scope.todos = sTab.todos;
+        }
+
         $scope.saveChanges = function(){
           $localStorage.SavedColor = cook;
           swal("Good job!", "All Saved!..", "success")
@@ -254,7 +301,7 @@
         }
         if (event) {
           event.returnValue = message;
-          $localStorage.Saved = $scope.todos;
+          $scope.saveInput();
         }
         return message;
       }

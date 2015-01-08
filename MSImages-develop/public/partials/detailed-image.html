@@ -1,0 +1,39 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <div class="main-body"> <h3 class="ng-binding">{{titleView}}</h3></div>
+                <div class="row">
+                   <div class="col-md-2">
+                        <div>
+                            <img class="default-image" ng-src="../styles/images/default_picture.jpg" ng-hide="imageSrc"/>
+                            <img class="image-preview" ng-src="{{imageSrc}}" ng-hide="!imageSrc"/>
+                        </div>
+                   </div>
+                    <div class="col-md-10">
+                           <p> <label>Name: </label> {{name}}</p>
+                           <p> <label>Size: </label> {{size}}</p>
+                           <p> <label>Description: </label> {{description}}</p>
+                           <p> <label>Contributor: </label> {{defaultContributorSelected}}</p>
+                           <p> <label>Album: </label> {{defaultAlbumSelected}}</p>
+                           <p> <label>Tags: </label> {{tags}}</p>
+                           <p>
+                                <button type="button" class="download-button"><a href="#/edit-image/{{id}}"> EDIT </a></button>
+                                <button type="button" class="download-button"><a href="api/images/download/{{id}}"> DOWNLOAD </a></button>
+                          </p>
+                    </div>
+                </div>
+            <div class="row">
+                <div class="col-md-3" ng-repeat="image in images">
+                    <div class="images-container">
+                        <div> <a href="#/detailed-image/{{image._id}}" class="search-preview thumbnail"><img ng-src={{image.path}}></a> </div>
+                        <div class="col-md-2"> <a href="#/edit-image/{{image._id}}"><span class="glyphicon glyphicon-edit"></span></a> </div>
+                        <div class="col-md-2"><a href="api/images/download/{{image._id}}"><span class="glyphicon glyphicon-download"></span></a></div>
+                        <div class="col-md-2" ng-click="delete(image._id)"><span class="glyphicon glyphicon-trash"></span></div>
+
+                    </div>
+                </div>
+            </div>
+         </div>
+    </div>
+</div>
