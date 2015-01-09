@@ -52,7 +52,7 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Import <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
-                <li><input type="file" ng-model="model.file" change="upload(model)">
+                <li><input type="file" id="input"></li>
                 <li class="divider"></li>
                 <li><a href="#" ng-click="import()">Upload</a></li>
               </ul>
@@ -195,6 +195,7 @@
           return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
       }
       var cook = null;
+
       function pick(){
         var elem = document.getElementById("colorpick").value;
         cook = document.cookie="#" + elem;
@@ -239,11 +240,16 @@
           };
 
          $scope.import = function () {
-             var file = $scope.uploadedfile;
-             var result = alasql('SELECT * FROM XLSX(file,{headers:true})');
-             var a = 0;
+             selected_file = document.getElementById('input').files[0];
+            alasql('SELECT * FROM XLSX("selected_file.xlsx",{headers:true,sheetid:"Sheet2",range:"A1:D100"})',
+     [],function(data) {
+     console.log(res);
+});
+
+
 
           };
+
         $scope.addTodo = function(){
           $scope.todos.push({'title' : $scope.newTodo, 'done' :false});
           $scope.newtodo = ''
@@ -274,7 +280,7 @@
         }
         $scope.loadInput = function() {
           $scope.tabs = $localStorage.Saved;
-          $scope.currentTab = $localStorage.TabSaved;
+
           swal("Done!", "All Loaded!..", "success")
         }
         $scope.init = function(){
@@ -284,8 +290,10 @@
           else{
             $scope.tabs.push({'title' : 'default', 'todos': $scope.todos,
             'active': true});
-            $scope.currentTab = $scope.tabs[0];
+
           }
+          $scope.currentTab = $scope.tabs[0];
+          $scope.todos = $scope.currentTab.todos;
           if($localStorage.SavedColor != undefined){
             cook = $localStorage.SavedColor;
             var colour = document.getElementById("change");
@@ -321,10 +329,12 @@
 
         $scope.selectTab = function(sTab)
         {
-          sTab.active = true;
-          $scope.currentTab.active = false;
-          $scope.currentTab = sTab;
-          $scope.todos = sTab.todos;
+          if(sTab != $scope.currentTab){
+              sTab.active = true;
+              $scope.currentTab.active = false;
+              $scope.currentTab = sTab;
+              $scope.todos = sTab.todos;
+          }
         }
 
         $scope.saveChanges = function(){
